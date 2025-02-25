@@ -139,3 +139,4 @@ def step_impl(context):
         print(f"O usuário {username} não existe mais no sistema.")
     else:
         raise Exception(f"O usuário {username} ainda existe no sistema. Status: {response.status_code}, {response.text}")
+
