@@ -1,37 +1,33 @@
 from behave import *
 from features.impl.impl import DadosUsuario
 
-# Definindo o username no contexto assim que o usuário é criado
+
 @given(u'que eu cadastro um novo usuário')
 def step_impl(context):
     context.api = DadosUsuario()
 
-    # Definindo os dados do usuário
     context.api.id = 1
-    context.api.username = 'Motta'  # Armazenando o username no contexto
+    context.api.username = 'Motta'
     context.api.firstName = 'Thiago'
     context.api.lastName = 'Motta'
     context.api.email = 'motta@gmail.com'
     context.api.password = '123456'
     context.api.phone = '987654321'
 
-    # Enviando a requisição para criar o usuário
     response = context.api.post_criar_novo_usuario()
 
     if response.status_code != 200:
         raise Exception(f"Erro ao criar o usuário: {response.status_code}, {response.text}")
     else:
         print(f"Usuário criado com sucesso: {response.json()}")
-        # Salvando o username no contexto para ser usado posteriormente
         context.username = context.api.username
+
 
 @then(u'o usuário deve ser incluído com sucesso')
 def step_impl(context):
-    # Verificando se o username foi armazenado no contexto
     if not hasattr(context, 'username'):
         raise Exception("O username não foi armazenado no contexto! Não foi possível validar a criação do usuário.")
 
-    # Reutilizando o username armazenado no contexto
     username = context.username
     response = context.api.get_consulta_usuario(username)
 
@@ -42,29 +38,21 @@ def step_impl(context):
     assert user_data['username'] == username, f"Esperado {username}, mas encontrado {user_data['username']}!"
     print(f"Usuário {username} incluído com sucesso: {user_data}")
 
-# Outras etapas que utilizam o username de forma reutilizável
+
 @given(u'que eu realizo uma consulta pelo usuário')
 def step_impl(context):
     context.api = DadosUsuario()
-
-    # Aqui estamos pegando o username diretamente do contexto
-    if not hasattr(context, 'username'):
-        raise Exception("O username não foi armazenado corretamente no contexto!")
-
-    username = context.username  # Pegando o username armazenado no contexto
+    username = "Motta"
 
     response = context.api.get_consulta_usuario(username)
 
     if response.status_code != 200:
         raise Exception(f"Erro ao validar o usuário. Status: {response.status_code}, {response.text}")
 
+
 @then(u'os dados do usuário devem ser retornados corretamente')
 def step_impl(context):
-    # Pegando o username diretamente do contexto
-    if not hasattr(context, 'username'):
-        raise Exception("O username não foi armazenado corretamente no contexto!")
-
-    username = context.username  # Pegando o username armazenado no contexto
+    username = "Motta"
 
     response = context.api.get_consulta_usuario(username)
 
@@ -81,16 +69,11 @@ def step_impl(context):
 
     print(f"Os dados do usuário {username} foram retornados corretamente: {user_data}")
 
-# Outras etapas de atualização e exclusão podem reutilizar o username também
+
 @given(u'que eu altero as informações de um usuário existente')
 def step_impl(context):
     context.api = DadosUsuario()
-
-    # Pegando o username diretamente do contexto
-    if not hasattr(context, 'username'):
-        raise Exception("O username não foi armazenado corretamente no contexto!")
-
-    username = context.username  # Pegando o username armazenado no contexto
+    username = "Motta"
 
     novos_dados = {
         "id": 1,
@@ -120,6 +103,7 @@ def step_impl(context):
     else:
         print(f"Erro ao verificar alteração. Status: {response_verificacao.status_code}, Detalhes: {response_verificacao.text}")
         context.user_data = None
+
 
 @then(u'as novas informações devem ser salvas corretamente')
 def step_impl(context):
